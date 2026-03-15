@@ -1,0 +1,315 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom_css/dashboard.css') }}">
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="mb-0">Dashboard Absensi</h5>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('home_blueprint.index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Absensi</a></li>
+                <li class="breadcrumb-item" aria-current="page">Dashboard</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ Statistik Utama ] start -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-2 font-weight-bold">TOTAL SISWA</h6>
+                  <h3 class="font-weight-bold m-0">1,248</h3>
+                  <p class="mb-0 text-muted"><span class="text-success"><i class="feather icon-arrow-up"></i> 5.2%</span> dari bulan lalu</p>
+                </div>
+                <div class="stat-icon">
+                  <i class="feather icon-users text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Total Murid ] end -->
+
+        <!-- [ Absen Hari Ini ] start -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-2 font-weight-bold">ABSEN HARI INI</h6>
+                  <h3 class="font-weight-bold m-0">1,120</h3>
+                  <p class="mb-0 text-muted"><span class="text-success"><i class="feather icon-arrow-up"></i> 3.1%</span> dari kemarin</p>
+                </div>
+                <div class="stat-icon">
+                  <i class="feather icon-check-circle text-success"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Absen Hari Ini ] end -->
+
+        <!-- [ Ketidakhadiran ] start -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-2 font-weight-bold">TIDAK HADIR</h6>
+                  <h3 class="font-weight-bold m-0">128</h3>
+                  <p class="mb-0 text-muted"><span class="text-danger"><i class="feather icon-arrow-down"></i> 2.4%</span> dari kemarin</p>
+                </div>
+                <div class="stat-icon">
+                  <i class="feather icon-user-x text-warning"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Ketidakhadiran ] end -->
+
+        <!-- [ Kartu Tidak Terdaftar ] start -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-2 font-weight-bold">KARTU TIDAK TERDAFTAR</h6>
+                  <h3 class="font-weight-bold m-0">12</h3>
+                  <p class="mb-0 text-muted"><span class="text-danger"><i class="feather icon-arrow-up"></i> 1.2%</span> dari minggu lalu</p>
+                </div>
+                <div class="stat-icon">
+                  <i class="feather icon-alert-circle text-danger"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Kartu Tidak Terdaftar ] end -->
+      </div>
+
+      <div class="row">
+        <!-- [ Grafik Absensi ] start -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5>Statistik Absensi 7 Hari Terakhir</h5>
+            </div>
+            <div class="card-body">
+              <div id="attendance-chart" style="height: 300px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Grafik Absensi ] end -->
+
+        <!-- [ Status Kelas ] start -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h5>Status Kelas Hari Ini</h5>
+            </div>
+            <div class="card-body">
+              <div class="class-status-list">
+                <div class="class-status-item">
+                  <div class="class-info">
+                    <h6>Kelas 10A</h6>
+                    <span>08:00 - 14:00</span>
+                  </div>
+                  <div class="attendance-rate">
+                    <span class="rate-badge high">94%</span>
+                  </div>
+                </div>
+                <div class="class-status-item">
+                  <div class="class-info">
+                    <h6>Kelas 10B</h6>
+                    <span>08:00 - 14:00</span>
+                  </div>
+                  <div class="attendance-rate">
+                    <span class="rate-badge high">96%</span>
+                  </div>
+                </div>
+                <div class="class-status-item">
+                  <div class="class-info">
+                    <h6>Kelas 11A</h6>
+                    <span>08:00 - 14:00</span>
+                  </div>
+                  <div class="attendance-rate">
+                    <span class="rate-badge medium">87%</span>
+                  </div>
+                </div>
+                <div class="class-status-item">
+                  <div class="class-info">
+                    <h6>Kelas 11B</h6>
+                    <span>08:00 - 14:00</span>
+                  </div>
+                  <div class="attendance-rate">
+                    <span class="rate-badge low">76%</span>
+                  </div>
+                </div>
+                <div class="class-status-item">
+                  <div class="class-info">
+                    <h6>Kelas 12A</h6>
+                    <span>08:00 - 14:00</span>
+                  </div>
+                  <div class="attendance-rate">
+                    <span class="rate-badge high">92%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Status Kelas ] end -->
+      </div>
+
+      <div class="row">
+        <!-- [ Absensi Terbaru ] start -->
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5>Riwayat Absensi Terbaru</h5>
+              <button class="btn btn-primary btn-sm">Lihat Semua</button>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Nama Siswa</th>
+                      <th>Kelas</th>
+                      <th>Waktu Absensi</th>
+                      <th>Status</th>
+                      <th>Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Andi Wijaya</td>
+                      <td>10A</td>
+                      <td>07:45:21</td>
+                      <td><span class="badge badge-success">Hadir</span></td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>Budi Santoso</td>
+                      <td>11B</td>
+                      <td>07:48:05</td>
+                      <td><span class="badge badge-success">Hadir</span></td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>Cindy Putri</td>
+                      <td>10B</td>
+                      <td>07:50:33</td>
+                      <td><span class="badge badge-success">Hadir</span></td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>Dian Sari</td>
+                      <td>12A</td>
+                      <td>07:52:11</td>
+                      <td><span class="badge badge-warning">Terlambat</span></td>
+                      <td>Macet di jalan</td>
+                    </tr>
+                    <tr>
+                      <td>Eko Pratama</td>
+                      <td>11A</td>
+                      <td>07:55:47</td>
+                      <td><span class="badge badge-success">Hadir</span></td>
+                      <td>-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ Absensi Terbaru ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+  <script>
+    // Inisialisasi grafik menggunakan Chart.js (contoh sederhana)
+    document.addEventListener('DOMContentLoaded', function() {
+      // Buat elemen canvas untuk grafik
+      const chartContainer = document.getElementById('attendance-chart');
+      const canvas = document.createElement('canvas');
+      chartContainer.appendChild(canvas);
+      
+      // Data contoh untuk grafik
+      const ctx = canvas.getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+          datasets: [{
+            label: 'Kehadiran',
+            data: [1120, 1150, 1105, 1080, 1120, 980, 0],
+            borderColor: '#4099ff',
+            backgroundColor: 'rgba(64, 153, 255, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }, {
+            label: 'Tidak Hadir',
+            data: [80, 50, 95, 120, 80, 20, 0],
+            borderColor: '#ff5370',
+            backgroundColor: 'rgba(255, 83, 112, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                drawBorder: false
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+{% endblock content %}

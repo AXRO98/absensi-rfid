@@ -1,0 +1,157 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Siswa{% endblock title %}
+
+{% block content %}
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="mb-0">Excel Viewer</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>Pembaca File Excel</h5>
+            <div class="card-header-right">
+              <div class="btn-group">
+                <input type="file" id="fileInput" accept=".xlsx, .xls" class="d-none">
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                  <i class="fas fa-file-excel"></i> Pilih File Excel
+                </button>
+                <button class="btn btn-success" id="downloadBtn" disabled>
+                  <i class="fas fa-download"></i> Download sebagai HTML
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="html-output" class="table-responsive">
+              <div class="text-center py-5">
+                <i class="fas fa-file-excel fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Pilih file Excel (.xlsx atau .xls) untuk melihat isinya</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      
+      // Tampilkan semua sheet
+      let htmlContent = '';
+      
+      workbook.SheetNames.forEach(sheetName => {
+        const worksheet = workbook.Sheets[sheetName];
+        const html = XLSX.utils.sheet_to_html(worksheet);
+        
+        htmlContent += `
+          <div class="sheet-section mb-4">
+            <h6 class="sheet-title bg-light p-2 mb-3">Sheet: ${sheetName}</h6>
+            ${html}
+          </div>
+        `;
+      });
+      
+      document.getElementById('html-output').innerHTML = htmlContent;
+      
+      // Style tables
+      const tables = document.querySelectorAll('#html-output table');
+      tables.forEach(table => {
+        table.className = 'table table-bordered table-striped table-hover';
+      });
+      
+      // Enable download button
+      document.getElementById('downloadBtn').disabled = false;
+      
+    } catch (error) {
+      document.getElementById('html-output').innerHTML = `
+        <div class="alert alert-danger">
+          <h6>Error membaca file</h6>
+          <p>${error.message}</p>
+        </div>
+      `;
+    }
+  };
+  
+  reader.onerror = function() {
+    document.getElementById('html-output').innerHTML = `
+      <div class="alert alert-danger">
+        Gagal membaca file. Pastikan file tidak rusak.
+      </div>
+    `;
+  };
+  
+  reader.readAsArrayBuffer(file);
+});
+
+// Download sebagai HTML
+document.getElementById('downloadBtn').addEventListener('click', function() {
+  const htmlContent = document.getElementById('html-output').innerHTML;
+  const blob = new Blob([`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Export Excel</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+      <div class="container mt-4">
+        ${htmlContent}
+      </div>
+    </body>
+    </html>
+  `], { type: 'text/html' });
+  
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'excel-export.html';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+
+<style>
+.sheet-title {
+  border-left: 4px solid #007bff;
+  font-weight: bold;
+}
+
+.table {
+  font-size: 0.9rem;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+</style>
+
+{% endblock content %}

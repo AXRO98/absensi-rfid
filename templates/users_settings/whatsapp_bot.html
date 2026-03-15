@@ -1,0 +1,831 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}WhatsApp Settings{% endblock title %}
+
+{% block content %}
+
+<!-- SweetAlert2 & QR Code API (opsional) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="mb-0">WhatsApp Settings</h5>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <ul class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="{{ url_for('home_blueprint.index') }}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="javascript: void(0)">Settings</a></li>
+              <li class="breadcrumb-item" aria-current="page">WhatsApp Connection</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card whatsapp-settings-card">
+      <div class="card-header">
+        <div class="header-content">
+          <h4 class="m-0">WhatsApp Bot Settings</h4>
+          <!-- Tombol token dihapus -->
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div id="deviceContainer"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL TAMBAH DEVICE (dengan Token, Nama, Nomor) -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Device WhatsApp</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Token <span class="text-danger">*</span></label>
+          <input type="text" id="deviceTokenInput" class="form-control" placeholder="Masukkan token dari fonnte">
+          <div class="form-text">Token akun WhatsApp Anda</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Nama Device <span class="text-danger">*</span></label>
+          <input type="text" id="deviceNameInput" class="form-control" placeholder="Contoh: Bot Marketing" maxlength="30" minlength="2">
+          <div class="form-text">Min. 2, maks. 30 karakter</div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Nomor Device <span class="text-danger">*</span></label>
+          <input type="text" id="deviceNumberInput" class="form-control" placeholder="628123456789" minlength="8" maxlength="15">
+          <div class="form-text">Min. 8, maks. 15 digit, unik</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-primary" onclick="addDevice()">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT DETAIL DEVICE (dengan tambahan field Nama) -->
+<div class="modal fade" id="editDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Device</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editDetailForm">
+          <!-- Field Nama Device (baru) -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Nama Device <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="editName" maxlength="30" minlength="2">
+            <div class="form-text">Min. 2, maks. 30 karakter</div>
+          </div>
+
+          <h6 class="fw-semibold mb-3">🌐 Webhook URLs</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label">Webhook</label>
+              <input type="url" class="form-control" id="editWebhook" placeholder="https://example.com/webhook">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Webhook Connect</label>
+              <input type="url" class="form-control" id="editWebhookConnect" placeholder="https://example.com/connect">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Webhook Status</label>
+              <input type="url" class="form-control" id="editWebhookStatus" placeholder="https://example.com/status">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Webhook Chaining</label>
+              <input type="url" class="form-control" id="editWebhookChaining" placeholder="https://example.com/chaining">
+            </div>
+          </div>
+
+          <h6 class="fw-semibold mb-3">⚙️ Autoread & Forward</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="editAutoread">
+                <label class="form-check-label" for="editAutoread">Autoread</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="editPersonal">
+                <label class="form-check-label" for="editPersonal">Personal</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="editGroup">
+                <label class="form-check-label" for="editGroup">Group</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="editQuick">
+                <label class="form-check-label" for="editQuick">Quick (Self Chat)</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="editResend">
+                <label class="form-check-label" for="editResend">Resend</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-primary" onclick="saveDetail()">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONNECT (QR / Pairing Code) -->
+<div class="modal fade" id="connectModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Connect WhatsApp</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills justify-content-center mb-4" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="qr-tab" data-bs-toggle="tab" data-bs-target="#qr" type="button" role="tab">QR Code</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="code-tab" data-bs-toggle="tab" data-bs-target="#code" type="button" role="tab">Pairing Code</button>
+          </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane active" id="qr" role="tabpanel">
+            <p class="text-muted mb-3">Scan QR ini dengan WhatsApp Anda</p>
+            <div id="qrCodeContainer" class="d-flex justify-content-center mb-3">
+              <!-- QR code akan diisi via JS -->
+              <img src="" alt="QR Code" id="qrCodeImage" style="width: 200px; height: 200px; border-radius: 16px;">
+            </div>
+            <p class="small text-muted">Atau gunakan kode pairing jika tidak bisa scan</p>
+          </div>
+          <div class="tab-pane" id="code" role="tabpanel">
+            <p class="text-muted mb-3">Masukkan kode berikut di WhatsApp:</p>
+            <div class="bg-light p-3 rounded-3">
+              <span id="pairingCodeDisplay" class="fs-1 fw-bold text-primary">ABC-123</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ===== GLOBAL & UTILITY ===== */
+  .whatsapp-settings-card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* ===== DEVICE CARD ===== */
+  .device-card-modern {
+    border-radius: 24px;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.03);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .device-card-modern:hover {
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.06);
+    border-color: rgba(13, 110, 253, 0.2);
+  }
+
+  .device-card-modern::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 3px;
+    background: linear-gradient(90deg, #0d6efd, #20c997, #0d6efd);
+    border-radius: 4px;
+    opacity: 0.4;
+  }
+
+  .device-status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px rgba(0,0,0,0.02);
+  }
+
+  .device-status-dot.connected {
+    background: #22c55e;
+  }
+
+  .device-status-dot.disconnected {
+    background: #f59e0b;
+  }
+
+  .device-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .device-info-box {
+    background: #f8fafc;
+    padding: 1.2rem 1rem;
+    border-radius: 18px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s;
+  }
+
+  .device-info-box:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+
+  .device-info-box span {
+    font-size: 0.8rem;
+    color: #64748b;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .device-info-box h6 {
+    margin: 0.5rem 0 0 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1e293b;
+  }
+
+  /* ===== DETAIL TAMBAHAN ===== */
+  .detail-section {
+    background: #f9f9fc;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 1px solid #f1f5f9;
+  }
+
+  .detail-label {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.2rem;
+  }
+
+  .detail-value {
+    font-weight: 500;
+    color: #1e293b;
+    word-break: break-word;
+  }
+
+  .detail-value .badge {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f9f9fc;
+    border-radius: 32px;
+    border: 1px dashed #d4d4d8;
+  }
+
+  .empty-state i {
+    font-size: 80px;
+    color: #a1a1aa;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h4 {
+    color: #3f3f46;
+    font-weight: 500;
+  }
+
+  .empty-state .btn-primary {
+    border-radius: 40px;
+    padding: 12px 32px;
+    font-weight: 600;
+    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.25);
+    border: none;
+  }
+
+  .empty-state .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(13, 110, 253, 0.35);
+  }
+
+  /* ===== BUTTON CUSTOM ===== */
+  .btn-light {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-radius: 30px;
+    padding: 8px 22px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .btn-light:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .btn-success {
+    background: #22c55e;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 22px;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
+  }
+
+  .btn-success:hover {
+    background: #16a34a;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(34, 197, 94, 0.3);
+  }
+
+  .btn-danger {
+    background: #ef4444;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 22px;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+  }
+
+  .btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-primary {
+    border-radius: 30px;
+    padding: 8px 24px;
+    font-weight: 600;
+  }
+
+  /* ===== MODAL CUSTOM ===== */
+  .modal-content {
+    border: none;
+    border-radius: 28px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #f1f5f9;
+    padding: 1.25rem 1.5rem;
+  }
+
+.webhook-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.webhook-icon {
+  font-size: 18px;
+}
+
+.webhook-content {
+  margin-left: 33px; /* sesuaikan agar sejajar huruf W */
+}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .device-card-modern {
+      padding: 1.5rem;
+    }
+
+    .device-info-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+
+<script>
+  let device = null; // single device only
+
+  function renderDevice() {
+    const container = document.getElementById("deviceContainer");
+
+    if (!device) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="ti ti-device-mobile"></i>
+          <h4 class="mb-3">Belum Ada Device</h4>
+          <p class="text-muted mb-4">Tambahkan perangkat WhatsApp untuk mulai mengirim pesan.</p>
+          <button class="btn btn-primary btn-lg"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addDeviceModal">
+            + Tambah Device
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    const isConnected = device.device_status === "connect";
+
+    container.innerHTML = `
+      <div class="device-card-modern">
+
+        <!-- Header & Status -->
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="device-status-dot ${isConnected ? 'connected' : 'disconnected'}"></span>
+            <h3 class="m-0 fw-semibold">${device.name}</h3>
+            </div>
+            <h5 class="text-secondary">${device.device}</h5>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn ${isConnected ? 'btn-danger' : 'btn-success'}"
+                    onclick="connectDevice()">
+            ${isConnected ? 'Disconnect' : 'Connect'}
+            </button>
+            <!-- Tombol Edit Nama dihapus, hanya satu tombol Edit -->
+            <button class="btn btn-light" onclick="openEditDetail()">
+            Edit
+            </button>
+        </div>
+        </div>
+
+        <!-- Info Grid (Package, Expired, Messages, Quota) -->
+        <div class="device-info-grid">
+          <div class="device-info-box">
+            <span>Package</span>
+            <h6>${device.package}</h6>
+          </div>
+          <div class="device-info-box">
+            <span>Expired</span>
+            <h6>${device.expired}</h6>
+          </div>
+          <div class="device-info-box">
+            <span>Messages</span>
+            <h6>${device.messages.toLocaleString()}</h6>
+          </div>
+          <div class="device-info-box">
+            <span>Quota</span>
+            <h6>${device.quota}</h6>
+          </div>
+        </div>
+
+        <!-- Detail Tambahan (sesuai spesifikasi) -->
+        <div class="detail-section">
+
+          <!-- Webhook URLs -->
+          <h6 class="fw-semibold mb-3 webhook-title">
+            <span class="webhook-icon">🌐</span>
+            <span>Webhook URLs</span>
+          </h6>
+          <div class="webhook-content">
+            <div class="row g-4">
+                <div class="col-md-6">
+                <div class="detail-label">Webhook</div>
+                <div class="detail-value">${device.webhook || '<span class="text-muted">-</span>'}</div>
+                </div>
+                <div class="col-md-6">
+                <div class="detail-label">Webhook Connect</div>
+                <div class="detail-value">${device.webhookconnect || '<span class="text-muted">-</span>'}</div>
+                </div>
+                <div class="col-md-6">
+                <div class="detail-label">Webhook Status</div>
+                <div class="detail-value">${device.webhookstatus || '<span class="text-muted">-</span>'}</div>
+                </div>
+                <div class="col-md-6">
+                <div class="detail-label">Webhook Chaining</div>
+                <div class="detail-value">${device.webhookchaining || '<span class="text-muted">-</span>'}</div>
+                </div>
+            </div>
+          </div>
+
+
+          <!-- Autoread & Forward -->
+          <h6 class="fw-semibold mb-3 webhook-title">
+            <span class="webhook-icon">⚙️</span>
+            <span>Autoread & Forward</span>
+          </h6>
+          <div class="webhook-content">
+            <div class="row g-4">
+                <div class="col-md-4">
+                <div class="detail-label">Autoread</div>
+                <div class="detail-value">${device.autoread ? '✅ Yes' : '❌ No'}</div>
+                </div>
+                <div class="col-md-4">
+                <div class="detail-label">Personal</div>
+                <div class="detail-value">${device.personal ? '✅ Yes' : '❌ No'}</div>
+                </div>
+                <div class="col-md-4">
+                <div class="detail-label">Group</div>
+                <div class="detail-value">${device.group ? '✅ Yes' : '❌ No'}</div>
+                </div>
+                <div class="col-md-4">
+                <div class="detail-label">Quick (Self Chat)</div>
+                <div class="detail-value">${device.quick ? '✅ Yes' : '❌ No'}</div>
+                </div>
+                <div class="col-md-4">
+                <div class="detail-label">Resend</div>
+                <div class="detail-value">${device.resend ? '✅ Yes' : '❌ No'}</div>
+                </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    `;
+  }
+
+  function addDevice() {
+    const token = document.getElementById("deviceTokenInput").value.trim();
+    const name = document.getElementById("deviceNameInput").value.trim();
+    const number = document.getElementById("deviceNumberInput").value.trim();
+
+    if (!token || !name || !number) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Data tidak lengkap',
+        text: 'Token, nama, dan nomor device harus diisi!',
+        confirmButtonColor: '#0d6efd'
+      });
+      return;
+    }
+
+    if (name.length < 2 || name.length > 30) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nama tidak valid',
+        text: 'Nama harus 2-30 karakter.',
+        confirmButtonColor: '#0d6efd'
+      });
+      return;
+    }
+
+    if (number.length < 8 || number.length > 15) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nomor tidak valid',
+        text: 'Nomor harus 8-15 digit.',
+        confirmButtonColor: '#0d6efd'
+      });
+      return;
+    }
+
+    // Inisialisasi device dengan field-field lengkap
+    device = {
+      token: token, // simpan token
+      name: name,
+      device: number,
+      device_status: "disconnect",
+      package: "Reguler",
+      expired: "18 November 2029",
+      messages: 16785,
+      quota: "78",
+      // field tambahan
+      webhook: "",
+      webhookconnect: "",
+      webhookstatus: "",
+      webhookchaining: "",
+      autoread: false,
+      personal: false,
+      group: false,
+      quick: false,
+      resend: false
+    };
+
+    // Tutup modal dan reset input
+    let modalEl = document.getElementById('addDeviceModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+    document.getElementById("deviceTokenInput").value = "";
+    document.getElementById("deviceNameInput").value = "";
+    document.getElementById("deviceNumberInput").value = "";
+
+    renderDevice();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: 'Device berhasil ditambahkan!',
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+    });
+  }
+
+  function connectDevice() {
+    if (device.device_status === "connect") {
+      // Jika sudah connect, disconnect
+      device.device_status = "disconnect";
+      renderDevice();
+      Swal.fire({
+        icon: 'info',
+        title: 'Device disconnected',
+        showConfirmButton: false,
+        timer: 1200
+      });
+    } else {
+      // Tampilkan modal connect dengan QR / kode
+      const modal = new bootstrap.Modal(document.getElementById('connectModal'));
+      
+      // Generate dummy pairing code
+      const pairingCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      document.getElementById('pairingCodeDisplay').innerText = pairingCode;
+      
+      // Generate QR dari pairing code (gunakan API eksternal)
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pairingCode)}`;
+      document.getElementById('qrCodeImage').src = qrUrl;
+
+      modal.show();
+
+      // Setelah scan, biasanya device_status berubah. Untuk simulasi, kita bisa tambahkan tombol "Selesai Scan" atau biarkan manual.
+      // Tapi kita buat: setelah modal ditutup, user bisa mengubah status secara manual via tombol disconnect/connect lagi.
+      // Agar lebih realistis, kita bisa tambahkan event listener.
+      document.getElementById('connectModal').addEventListener('hidden.bs.modal', function () {
+        // Tanyakan apakah sudah connect?
+        Swal.fire({
+          title: 'Apakah sudah terhubung?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, sudah',
+          cancelButtonText: 'Belum'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            device.device_status = "connect";
+            renderDevice();
+          }
+        });
+      }, { once: true });
+    }
+  }
+
+  function editDevice() {
+    Swal.fire({
+      title: 'Edit Nama Device',
+      input: 'text',
+      inputValue: device.name,
+      showCancelButton: true,
+      confirmButtonText: 'Simpan',
+      confirmButtonColor: '#0d6efd',
+      cancelButtonText: 'Batal',
+      inputValidator: (value) => {
+        if (!value) return 'Nama tidak boleh kosong!';
+        if (value.length < 2 || value.length > 30) return 'Nama harus 2-30 karakter.';
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        device.name = result.value;
+        renderDevice();
+        Swal.fire({
+          icon: 'success',
+          title: 'Nama diperbarui',
+          showConfirmButton: false,
+          timer: 1200
+        });
+      }
+    });
+  }
+
+    // Perubahan di fungsi openEditDetail
+    function openEditDetail() {
+    // Isi form modal dengan nilai device saat ini
+    document.getElementById('editName').value = device.name || '';
+    document.getElementById('editWebhook').value = device.webhook || '';
+    document.getElementById('editWebhookConnect').value = device.webhookconnect || '';
+    document.getElementById('editWebhookStatus').value = device.webhookstatus || '';
+    document.getElementById('editWebhookChaining').value = device.webhookchaining || '';
+    document.getElementById('editAutoread').checked = device.autoread || false;
+    document.getElementById('editPersonal').checked = device.personal || false;
+    document.getElementById('editGroup').checked = device.group || false;
+    document.getElementById('editQuick').checked = device.quick || false;
+    document.getElementById('editResend').checked = device.resend || false;
+
+    const modal = new bootstrap.Modal(document.getElementById('editDetailModal'));
+    modal.show();
+    }
+
+            // Perubahan di fungsi saveDetail (tambah validasi nama)
+            function saveDetail() {
+            // Ambil nilai dari form
+            const newName = document.getElementById('editName').value.trim();
+
+            // Validasi nama
+            if (!newName) {
+                Swal.fire({
+                icon: 'warning',
+                title: 'Nama tidak boleh kosong',
+                text: 'Harap isi nama device.',
+                confirmButtonColor: '#0d6efd'
+                });
+                return;
+            }
+            if (newName.length < 2 || newName.length > 30) {
+                Swal.fire({
+                icon: 'warning',
+                title: 'Nama tidak valid',
+                text: 'Nama harus 2-30 karakter.',
+                confirmButtonColor: '#0d6efd'
+                });
+                return;
+            }
+
+            // Simpan semua nilai
+            device.name = newName;
+            device.webhook = document.getElementById('editWebhook').value;
+            device.webhookconnect = document.getElementById('editWebhookConnect').value;
+            device.webhookstatus = document.getElementById('editWebhookStatus').value;
+            device.webhookchaining = document.getElementById('editWebhookChaining').value;
+            device.autoread = document.getElementById('editAutoread').checked;
+            device.personal = document.getElementById('editPersonal').checked;
+            device.group = document.getElementById('editGroup').checked;
+            device.quick = document.getElementById('editQuick').checked;
+            device.resend = document.getElementById('editResend').checked;
+
+            // Tutup modal
+            let modalEl = document.getElementById('editDetailModal');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            renderDevice();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Detail diperbarui',
+                showConfirmButton: false,
+                timer: 1200
+            });
+            }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    renderDevice();
+  });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,160 @@
+<nav class="pc-sidebar">
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a href="{{ url_for('home_blueprint.index') }}" class="b-brand text-primary">
+        <!-- ========   Change your logo from here   ============ -->
+        <img src="{{ url_for('static', filename='assets/images/title_robotik.svg') }}" class="img-fluid" alt="logo">
+      </a>
+    </div>
+    <div class="navbar-content">
+      <ul class="pc-navbar">
+
+        <!------------------------------------------------>
+        <!---------------- NAVIGASI PAGES ---------------->
+        <!------------------------------------------------>
+        <li class="pc-item pc-caption">
+          <label>PAGES</label>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('home_blueprint.home') }}" class="pc-link">
+            <span class="pc-micon"><i data-feather="home"></i></span>
+            <span class="pc-mtext">Home</span>
+          </a>
+        </li> 
+
+        <!------------------------------------------------>
+        <!--------------- NAVIGASI ABSENSI --------------->
+        <!------------------------------------------------>
+        {% if current_user.is_authenticated %}
+        <li class="pc-item pc-caption">
+          <label>ABSENSI</label>
+          <i data-feather="feather"></i>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('home_blueprint.dashboard') }}" class="pc-link">
+            <span class="pc-micon"><i class="fa-solid fa-gauge"></i></span>
+            <span class="pc-mtext">Dashboard</span>
+          </a>
+        </li> 
+        <li class="pc-item pc-hasmenu">
+          <a href="#" class="pc-link">
+            <span class="pc-micon"><i data-feather="users"></i></span>
+            <span class="pc-mtext">Absen Class</span>
+            <span class="pc-arrow"><i data-feather="chevron-down"></i></span>
+          </a>
+          <ul class="pc-submenu">
+            {% for class in kelas_list %}
+              <li class="pc-item">
+                <a href="{{ url_for('home_blueprint.absensi', kelas=class) }}" class="pc-link">
+                  Kelas {{ class }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %}
+
+        <!------------------------------------------------>
+        <!--------------- SISWA MANAGEMENT --------------->
+        <!------------------------------------------------>
+        {% if current_user.is_authenticated %}
+        <li class="pc-item pc-caption">
+          <label>SISWA MANAGEMENT</label>
+          <i data-feather="feather"></i>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('home_blueprint.siswa') }}" class="pc-link">
+            <span class="pc-micon"><i class="fa-solid fa-people-group"></i></span>
+            <span class="pc-mtext">Siswa</span>
+          </a>
+        </li>
+        <li class="pc-item pc-hasmenu">
+          <a href="#" class="pc-link">
+            <span class="pc-micon"><i class="fa-solid fa-clipboard-check"></i></span>
+            <span class="pc-mtext">Rekap Absen</span>
+            <span class="pc-arrow"><i data-feather="chevron-down"></i></span>
+          </a>
+          <ul class="pc-submenu">
+            {% for class in kelas_list %}
+              <li class="pc-item">
+                <a href="{{ url_for('home_blueprint.siswa_rekap', kelas=class) }}" class="pc-link">
+                  Kelas {{ class }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %}
+
+        <!------------------------------------------------>
+        <!--------------- USERS MANAGEMENT --------------->
+        <!------------------------------------------------>
+        {% if current_user.role == 'superadmin' %}
+        <li class="pc-item pc-caption">
+          <label>SETTINGS</label>
+          <i data-feather="feather"></i>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('users_blueprint.list_users') }}" class="pc-link">
+            <span class="pc-micon"><i class="fa-solid fa-users-gear"></i></span>
+            <span class="pc-mt  ext">Users Settings</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('users_blueprint.whatsapp_bot_settings') }}" class="pc-link">
+            <span class="pc-micon"><i class="fa-solid fa-robot"></i></span>
+            <span class="pc-mt  ext">Bot Whatsapp Settings</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('users_blueprint.whatsapp_bot') }}" class="pc-link">
+            <span class="pc-micon"><i class="fa-solid fa-robot"></i></span>
+            <span class="pc-mt  ext">Whatsapp Bot</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <!------------------------------------------------>
+        <!--------------- NAVIGASI ACCOUNT --------------->
+        <!------------------------------------------------>
+        <li class="pc-item pc-caption">
+          <label>ACCOUNT</label>
+          <i data-feather="feather"></i>
+        </li>
+        {% if not current_user.is_authenticated %}
+        <li class="pc-item">
+          <a href="{{ url_for('authentication_blueprint.login') }}" class="pc-link">
+            <span class="pc-micon"><i data-feather="lock"></i></span>
+            <span class="pc-mtext">Login</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('authentication_blueprint.register') }}" class="pc-link">
+            <span class="pc-micon"><i data-feather="user-plus"></i></span>
+            <span class="pc-mtext">Register</span>
+          </a>
+        </li>
+        {% else %}
+        <li class="pc-item">
+          <a href="{{ url_for('home_blueprint.profile') }}" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="user"></i>
+            </span>
+            <span class="pc-mtext">Profile</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="{{ url_for('authentication_blueprint.logout') }}" class="pc-link">
+            <span class="pc-micon">
+              <svg class="pc-icon me-2">
+                <use xlink:href="#custom-logout-1-outline"></use>
+              </svg>
+            </span>
+            <span class="pc-mtext">Logout</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

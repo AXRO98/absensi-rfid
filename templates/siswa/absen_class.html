@@ -1,0 +1,853 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Siswa{% endblock title %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+
+<style>
+    /* ===== CUSTOM STYLES ===== */
+    .stat-card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+    }
+    
+    .stat-card:nth-child(1)::before {
+        background: linear-gradient(90deg, #4099ff, #73b4ff);
+    }
+    
+    .stat-card:nth-child(2)::before {
+        background: linear-gradient(90deg, #2ed8b6, #59e0c5);
+    }
+    
+    .stat-card:nth-child(3)::before {
+        background: linear-gradient(90deg, #ff5370, #ff869a);
+    }
+    
+    .stat-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .stat-card i {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+    
+    .page-header-title h5 {
+        font-weight: 600;
+        color: #343a40;
+    }
+    
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+    }
+    
+    .breadcrumb-item a {
+        color: #6c757d;
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item.active {
+        color: #4099ff;
+    }
+    
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+        color: #343a40;
+    }
+    
+    .custom-table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .custom-table thead {
+        background: linear-gradient(135deg, #4099ff, #2b6cb0);
+        color: white;
+    }
+    
+    .custom-table thead th {
+      border: none;
+      font-weight: 1000;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .custom-table th {
+        border: none;
+        padding: 1rem 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .custom-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .custom-table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .custom-table td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border-color: #f1f5f9;
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+    }
+    
+    .btn-edit {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 0.375rem 0.75rem;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4099ff;
+        box-shadow: 0 0 0 3px rgba(64, 153, 255, 0.1);
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #4099ff, #2b6cb0);
+        color: white;
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+    }
+    
+    .btn-close {
+        filter: invert(1);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #2ed8b6, #20a085);
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(46, 216, 182, 0.3);
+    }
+    
+    .btn-secondary {
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    .dt-buttons .btn {
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start !important;
+        }
+        
+        .card-header h4 {
+            font-size: 1.25rem;
+        }
+        
+        .stat-card .card-body {
+            padding: 1rem;
+        }
+        
+        .stat-card i {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="mb-0">Siswa Kelas {{ kelas }}</h5>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <ul class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="{{ url_for('home_blueprint.index') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="javascript:void(0)">Absensi</a></li>
+              <li class="breadcrumb-item" aria-current="page">Siswa</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- INFO BOX - Tambahkan ID pada elemen statistik -->
+  <div class="row">
+      <div class="col-md-6 col-xl-4">
+          <div class="card stat-card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="mb-2 font-weight-bold">TOTAL SISWA</h6>
+                      <h3 class="mb-0" id="totalSiswa">{{ total_siswa }}</h3> <!-- ID ditambahkan -->
+                  </div>
+                  <i class="feather icon-users text-primary"></i>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-md-6 col-xl-4">
+          <div class="card stat-card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="mb-2 font-weight-bold">SUDAH ABSEN</h6>
+                      <h3 class="mb-0" id="sudahAbsen">{{ sudah_absen }}</h3> <!-- ID ditambahkan -->
+                  </div>
+                  <i class="feather icon-check-circle text-success"></i>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-md-6 col-xl-4">
+          <div class="card stat-card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                  <div>
+                      <h6 class="mb-2 font-weight-bold">BELUM ABSEN</h6>
+                      <h3 class="mb-0" id="belumAbsen">{{ belum_absen }}</h3> <!-- ID ditambahkan -->
+                  </div>
+                  <i class="feather icon-x-circle text-danger"></i>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <!-- TABEL -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+              <h4>Data Absensi Kelas {{ kelas }}</h4>
+
+              <div class="d-flex gap-2 align-items-center">
+                  <span class="text-muted small">
+                      Status: <span id="connectionStatus">🟢 Connected</span> | 
+                      Update: <span id="updateTime">{{ now.strftime('%H:%M:%S') if now else '' }}</span>
+                  </span>
+
+                  <form method="POST" class="d-flex gap-2 m-0" id="tanggalForm">
+                      {% if kelas %}
+                          <input type="hidden" name="kelas" value="{{ kelas }}">
+                      {% endif %}
+                      <input type="date" name="tanggal" class="form-control" style="width: 170px;"
+                            value="{{ tanggal_input }}" max="{{ current_date }}" id="tanggalInput">
+                  </form>
+              </div>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+            <table id="absensiTable" class="table table-hover table-bordered align-middle custom-table mb-0">
+                <thead class="table-header">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>UID</th>
+                        <th>Gender</th>
+                        <th>Status</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Keluar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ user.nama }}</td>
+                        <td>{{ user.UID }}</td>
+                        <td>{{ user.gender }}</td>
+
+                        <!-- STATUS -->
+                        <td>
+                            {% if user.status == "Hadir" %}
+                                <span class="badge bg-success">Hadir</span>
+                            {% elif user.status == "Terlambat" %}
+                                <span class="badge bg-warning text-dark">Terlambat</span>
+                            {% elif user.status == "Izin" %}
+                                <span class="badge bg-info text-dark">Izin</span>
+                            {% elif user.status == "Sakit" %}
+                                <span class="badge bg-primary">Sakit</span>
+                            {% elif user.status == "Alpa" %}
+                                <span class="badge bg-danger">Alpa</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Belum Absen</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- JAM MASUK -->
+                        <td>
+                            {% if user.jam_masuk and user.jam_masuk != "" %}
+                                <span class="text-success fw-bold">{{ user.jam_masuk }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- JAM KELUAR -->
+                        <td>
+                            {% if user.jam_keluar and user.jam_keluar != "" %}
+                                <span class="text-primary fw-bold">{{ user.jam_keluar }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+
+                      <!-- AKSI -->
+                      <td>
+                          <button 
+                              class="btn btn-info btn-sm"
+                              data-bs-toggle="modal"
+                              data-bs-target="#editAbsenModal"
+                              data-uid="{{ user.UID }}"
+                              data-nama="{{ user.nama }}"
+                              data-gender="{{ user.gender }}"
+                              data-status="{{ user.status }}"
+                              data-jam-masuk="{{ user.jam_masuk }}"
+                              data-jam-keluar="{{ user.jam_keluar }}"
+                          >
+                              <i data-feather="edit-2" class="me-1" style="width: 14px; height: 14px;"></i>
+                              Edit
+                          </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ===== MODAL EDIT ABSEN ===== -->
+<div class="modal fade" id="editAbsenModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" class="modal-content">
+            
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Absensi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" name="uid" id="edit_uid">
+                <input type="hidden" name="tanggal" value="{{ tanggal_input }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Nama Siswa</label>
+                    <input type="text" id="edit_nama" class="form-control" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Status Baru</label>
+                    <select name="status" id="edit_status" class="form-select" required>
+                        <option value="Hadir">Hadir</option>
+                        <option value="Terlambat">Terlambat</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Alpa">Alpa</option>
+                    </select>
+                </div>
+
+                <!-- Optional: Field Jam -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Jam Masuk</label>
+                            <input type="time" name="jam_masuk" id="edit_jam_masuk" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Jam Keluar</label>
+                            <input type="time" name="jam_keluar" id="edit_jam_keluar" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Simpan</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+document.getElementById("tanggalInput").addEventListener("change", function() {
+    document.getElementById("tanggalForm").submit();
+});
+</script>
+
+  <!-- ===== SCRIPT MODAL ===== -->
+<script>
+// ===== SCRIPT MODAL =====
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("editAbsenModal");
+
+    modal.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget;
+
+        const uid = button.getAttribute("data-uid");
+        const nama = button.getAttribute("data-nama");
+        const status = button.getAttribute("data-status");
+        const jam_masuk = button.getAttribute("data-jam-masuk");
+        const jam_keluar = button.getAttribute("data-jam-keluar");
+
+        document.getElementById("edit_uid").value = uid;
+        document.getElementById("edit_nama").value = nama;
+        document.getElementById("edit_status").value = status || "";
+        
+        // Optional: Set jam jika ada field-nya
+        if (document.getElementById("edit_jam_masuk")) {
+             document.getElementById("edit_jam_masuk").value = jam_masuk || "";
+        }
+        if (document.getElementById("edit_jam_keluar")) {
+            document.getElementById("edit_jam_keluar").value = jam_keluar || "";
+        }
+    });
+});
+</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<script>
+// SSE Configuration
+let eventSource;
+let dataTable;
+
+document.addEventListener("DOMContentLoaded", function () {
+    initializeDataTable();
+    startSSEConnection();
+    setupEventListeners();
+    
+    // Initial data load setelah semua di-setup
+    setTimeout(() => {
+        checkForUpdates();
+    }, 1000);
+});
+
+function initializeDataTable() {
+    // Cek apakah DataTable sudah di-initialize, jika iya return saja
+    if ($.fn.DataTable.isDataTable('#absensiTable')) {
+        dataTable = $('#absensiTable').DataTable();
+        return dataTable;
+    }
+    
+    // Initialize DataTable pertama kali
+    dataTable = $('#absensiTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'collection',
+                text: '<i class="fa fa-download"></i> Ekspor',
+                className: 'btn btn-success btn-sm',
+                buttons: [
+                    { extend: 'copy', text: 'Copy' },
+                    { extend: 'csv', text: 'CSV' },
+                    { extend: 'excel', text: 'Excel' },
+                    { extend: 'pdf', text: 'PDF' },
+                    { extend: 'print', text: 'Print' }
+                ]
+            }
+        ],
+        responsive: true,
+        searching: false,
+        language: {
+            emptyTable: "Tidak ada data absensi untuk tanggal yang dipilih",
+            info: "Menampilkan _START_ hingga _END_ dari _TOTAL_ siswa",
+            infoEmpty: "Menampilkan 0 hingga 0 dari 0 siswa",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Selanjutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+    
+    console.log("DataTable initialized successfully");
+    return dataTable;
+}
+
+function startSSEConnection() {
+    // Close existing connection if any
+    if (eventSource) {
+        eventSource.close();
+    }
+
+    // Start new SSE connection
+    eventSource = new EventSource("{{ url_for('home_blueprint.stream_absen') }}");
+
+    eventSource.onmessage = function(event) {
+        try {
+            const data = JSON.parse(event.data);
+            console.log("SSE Data received:", data);
+            
+            if (data.type === 'update') {
+                checkForUpdates();
+            } else if (data.type === 'heartbeat') {
+                updateLastUpdateTime();
+            }
+        } catch (e) {
+            console.error("Error parsing SSE data:", e);
+        }
+    };
+
+    eventSource.onerror = function(event) {
+        console.error("SSE Error:", event);
+        showConnectionStatus(false);
+        
+        setTimeout(() => {
+            showConnectionStatus(true);
+            startSSEConnection();
+        }, 3000);
+    };
+
+    eventSource.onopen = function() {
+        console.log("SSE Connection established");
+        showConnectionStatus(true);
+    };
+}
+
+function setupEventListeners() {
+    // Tanggal change
+    document.getElementById("tanggalInput").addEventListener("change", function() {
+        document.getElementById("tanggalForm").submit();
+    });
+
+    // Manual refresh
+    document.getElementById("manualRefresh").addEventListener("click", function() {
+        checkForUpdates();
+    });
+
+    // Modal event
+    const modal = document.getElementById("editAbsenModal");
+    modal.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget;
+        const uid = button.getAttribute("data-uid");
+        const nama = button.getAttribute("data-nama");
+        const status = button.getAttribute("data-status");
+        const jam_masuk = button.getAttribute("data-jam-masuk");
+        const jam_keluar = button.getAttribute("data-jam-keluar");
+
+        document.getElementById("edit_uid").value = uid;
+        document.getElementById("edit_nama").value = nama;
+        document.getElementById("edit_status").value = status || "";
+        
+        // Set jam values
+        const jamMasukElem = document.getElementById("edit_jam_masuk");
+        const jamKeluarElem = document.getElementById("edit_jam_keluar");
+        if (jamMasukElem) jamMasukElem.value = jam_masuk || "";
+        if (jamKeluarElem) jamKeluarElem.value = jam_keluar || "";
+    });
+}
+
+async function checkForUpdates() {
+    try {
+        console.log("Checking for updates...");
+        
+        const params = new URLSearchParams({
+            'tanggal': '{{ tanggal_input }}',
+            'kelas': '{{ kelas or "" }}'
+        });
+
+        const response = await fetch(`{{ url_for('home_blueprint.get_absen_data') }}?${params}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error || 'Unknown error');
+        }
+        
+        console.log("Update data received, users:", data.users.length);
+        
+        // Update semua komponen
+        updateStatistics(data);
+        updateTableData(data);
+        showRefreshIndicator();
+        updateLastUpdateTime();
+        
+    } catch (error) {
+        console.error('Error updating data:', error);
+    }
+}
+
+function updateStatistics(data) {
+    const elements = {
+        'totalSiswa': data.total_siswa || 0,
+        'sudahAbsen': data.sudah_absen || 0,
+        'belumAbsen': data.belum_absen || 0
+    };
+    
+    Object.keys(elements).forEach(id => {
+        const elem = document.getElementById(id);
+        if (elem) {
+            elem.textContent = elements[id];
+        }
+    });
+}
+
+function updateTableData(data) {
+    if (!dataTable) {
+        dataTable = initializeDataTable();
+    }
+    
+    // Clear existing data dan tambah yang baru
+    dataTable.clear();
+    
+    data.users.forEach((user, index) => {
+        const statusBadge = getStatusBadge(user.status);
+        const jamMasuk = user.jam_masuk ? `<span class="text-success fw-bold">${user.jam_masuk}</span>` : '<span class="text-muted">-</span>';
+        const jamKeluar = user.jam_keluar ? `<span class="text-primary fw-bold">${user.jam_keluar}</span>` : '<span class="text-muted">-</span>';
+        
+        dataTable.row.add([
+            index + 1,
+            user.nama,
+            user.UID,
+            user.gender,
+            statusBadge,
+            jamMasuk,
+            jamKeluar,
+            getEditButtonHTML(user)
+        ]);
+    });
+    
+    dataTable.draw();
+    reattachEditButtonListeners();
+}
+
+function getStatusBadge(status) {
+    const badgeClasses = {
+        'Hadir': 'bg-success',
+        'Terlambat': 'bg-warning text-dark',
+        'Izin': 'bg-info text-dark',
+        'Sakit': 'bg-primary',
+        'Alpa': 'bg-danger'
+    };
+    
+    const badgeClass = badgeClasses[status] || 'bg-secondary';
+    const badgeText = status || 'Belum Absen';
+    
+    return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+}
+
+function getEditButtonHTML(user) {
+    return `
+        <button class="btn btn-info btn-sm edit-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#editAbsenModal"
+            data-uid="${user.UID}"
+            data-nama="${user.nama}"
+            data-kelas="${user.kelas}"
+            data-gender="${user.gender}"
+            data-status="${user.status || ''}"
+            data-jam-masuk="${user.jam_masuk || ''}"
+            data-jam-keluar="${user.jam_keluar || ''}">
+            <i data-feather="edit-2" class="me-1" style="width: 14px; height: 14px;"></i>
+            Edit
+        </button>
+    `;
+}
+
+function reattachEditButtonListeners() {
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const dataAttrs = ['uid', 'nama', 'status', 'jam-masuk', 'jam-keluar'];
+            const data = {};
+            
+            dataAttrs.forEach(attr => {
+                data[attr] = this.getAttribute(`data-${attr}`) || '';
+            });
+            
+            // Set values ke modal
+            document.getElementById("edit_uid").value = data.uid;
+            document.getElementById("edit_nama").value = data.nama;
+            document.getElementById("edit_status").value = data.status;
+            
+            const jamMasukElem = document.getElementById("edit_jam_masuk");
+            const jamKeluarElem = document.getElementById("edit_jam_keluar");
+            if (jamMasukElem) jamMasukElem.value = data['jam-masuk'];
+            if (jamKeluarElem) jamKeluarElem.value = data['jam-keluar'];
+        });
+    });
+    
+    // Update feather icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+}
+
+function showRefreshIndicator() {
+    // Hapus indicator lama jika ada
+    const oldIndicator = document.getElementById('refreshIndicator');
+    if (oldIndicator) {
+        oldIndicator.remove();
+    }
+    
+    // Buat indicator baru dengan posisi yang tidak ketutupan navbar
+    const indicator = document.createElement('div');
+    indicator.id = 'refreshIndicator';
+    indicator.innerHTML = '🔄 Data Diperbarui';
+    indicator.style.cssText = `
+        position: fixed;
+        top: 80px; /* Di bawah navbar */
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 1050; /* Lebih tinggi dari navbar */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    `;
+    
+    document.body.appendChild(indicator);
+    
+    // Animasi show dan hide
+    setTimeout(() => {
+        indicator.style.opacity = '1';
+    }, 10);
+    
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                indicator.remove();
+            }
+        }, 300);
+    }, 2000);
+}
+
+function updateLastUpdateTime() {
+    const updateTimeElem = document.getElementById('updateTime');
+    if (updateTimeElem) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('id-ID');
+        updateTimeElem.textContent = timeString;
+    }
+}
+
+function showConnectionStatus(connected) {
+    const statusElement = document.getElementById('connectionStatus');
+    if (statusElement) {
+        statusElement.textContent = connected ? '🟢 Connected' : '🔴 Disconnected';
+        statusElement.className = connected ? 'text-success' : 'text-danger';
+    }
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', function() {
+    if (eventSource) {
+        eventSource.close();
+    }
+    if (dataTable && $.fn.DataTable.isDataTable('#absensiTable')) {
+        dataTable.destroy(true);
+    }
+});
+
+// Prevent DataTable reinitialization error
+$(document).ready(function() {
+    // DataTable sudah di-handle di initializeDataTable()
+});
+</script>
+
+{% endblock content %}

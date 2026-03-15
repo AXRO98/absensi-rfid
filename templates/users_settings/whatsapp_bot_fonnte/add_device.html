@@ -1,0 +1,190 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Tambah Device WhatsApp{% endblock title %}
+
+{% block content %}
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="mb-0">Tambah Device WhatsApp</h5>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <ul class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="{{ url_for('home_blueprint.index') }}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="{{ url_for('users_blueprint.whatsapp_bot') }}">WhatsApp Settings</a></li>
+              <li class="breadcrumb-item" aria-current="page">Tambah Device</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card whatsapp-settings-card">
+      <div class="card-header">
+        <div class="header-content">
+          <h4 class="m-0">Tambah Device Baru</h4>
+          <p class="m-0 text-muted">Masukkan token dan informasi device</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form id="addDeviceForm" onsubmit="event.preventDefault(); addDevice();">
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Token <span class="text-danger">*</span></label>
+            <input type="text" id="deviceTokenInput" class="form-control form-control-lg" placeholder="Masukkan token dari fonnte" required>
+            <div class="form-text">Token akun WhatsApp Anda</div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Nama Device <span class="text-danger">*</span></label>
+            <input type="text" id="deviceNameInput" class="form-control form-control-lg" placeholder="Contoh: Bot Marketing" maxlength="30" minlength="2" required>
+            <div class="form-text">Min. 2, maks. 30 karakter</div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Nomor Device <span class="text-danger">*</span></label>
+            <input type="text" id="deviceNumberInput" class="form-control form-control-lg" placeholder="628123456789" minlength="8" maxlength="15" required>
+            <div class="form-text">Min. 8, maks. 15 digit, unik</div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end">
+            <a href="{{ url_for('users_blueprint.whatsapp_bot') }}" class="btn btn-light btn-lg">Batal</a>
+            <button type="submit" class="btn btn-primary btn-lg">Simpan Device</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Reuse style yang sama atau salin yang diperlukan */
+  .whatsapp-settings-card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+    background-color: #ffffff;
+  }
+  .form-control-lg {
+    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+  }
+  .form-control-lg:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+  }
+  .btn {
+    border-radius: 40px;
+    padding: 10px 28px;
+    font-weight: 600;
+  }
+  .btn-primary {
+    background: #0d6efd;
+    border: none;
+    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.25);
+  }
+  .btn-primary:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(13, 110, 253, 0.35);
+  }
+  .btn-light {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+  }
+  .btn-light:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+  }
+</style>
+
+<script>
+  function addDevice() {
+    const token = document.getElementById("deviceTokenInput").value.trim();
+    const name = document.getElementById("deviceNameInput").value.trim();
+    const number = document.getElementById("deviceNumberInput").value.trim();
+
+    if (!token || !name || !number) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Data tidak lengkap',
+        text: 'Token, nama, dan nomor device harus diisi!',
+        confirmButtonColor: '#0d6efd'
+      });
+      return;
+    }
+
+    if (name.length < 2 || name.length > 30) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nama tidak valid',
+        text: 'Nama harus 2-30 karakter.',
+        confirmButtonColor: '#0d6efd'
+      });
+      return;
+    }
+
+    if (number.length < 8 || number.length > 15) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nomor tidak valid',
+        text: 'Nomor harus 8-15 digit.',
+        confirmButtonColor: '#0d6efd'
+      });
+      return;
+    }
+
+    // Buat objek device dengan default values
+    const newDevice = {
+      token: token,
+      name: name,
+      device: number,
+      device_status: "disconnect",
+      package: "Reguler",
+      expired: "18 November 2029",
+      messages: 16785,
+      quota: "78",
+      webhook: "",
+      webhookconnect: "",
+      webhookstatus: "",
+      webhookchaining: "",
+      autoread: false,
+      personal: false,
+      group: false,
+      quick: false,
+      resend: false
+    };
+
+    // Simpan ke localStorage
+    localStorage.setItem('whatsapp_device', JSON.stringify(newDevice));
+
+    // Tampilkan notifikasi sukses dan redirect ke halaman settings
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: 'Device berhasil ditambahkan!',
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+    }).then(() => {
+      window.location.href = "{{ url_for('users_blueprint.whatsapp_bot') }}";
+    });
+  }
+</script>
+
+{% endblock content %}

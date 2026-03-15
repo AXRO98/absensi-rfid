@@ -1,0 +1,335 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Users Management{% endblock title %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom_css/users_management.css') }}">
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="mb-0">Users Management</h5>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <ul class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="{{ url_for('home_blueprint.index') }}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="javascript: void(0)">Users Settings</a></li>
+              <li class="breadcrumb-item" aria-current="page">Users Management</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card users-management-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="header-content">
+          <h4 class="m-0">List Users</h4>
+          <p class="m-0 text-muted">Manage all system users and their permissions</p>
+        </div>
+        <button class="btn btn-primary btn-add-user" data-bs-toggle="modal" data-bs-target="#addUserModal">
+          <i class="feather icon-user-plus"></i> Add New User
+        </button>
+      </div>
+      
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table users-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                  <div class="user-info">
+                    <div class="user-details">
+                      <span class="username">{{ user.username }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <span class="role-badge role-{{ user.role }}">
+                    <i class="feather icon-{% if user.role == 'superadmin' %}shield{% else %}user{% endif %}"></i>
+                    {{ user.role|title }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-action btn-edit" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#userModal{{ user.id }}"
+                            data-user-id="{{ user.id }}">
+                      <i class="feather icon-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal Add User -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header-content">
+          <i class="feather icon-user-plus modal-icon"></i>
+          <div>
+            <h5 class="modal-title">Add New User</h5>
+            <p class="modal-subtitle">Create a new user account</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <form method="POST" action="{{ url_for('authentication_blueprint.add_user') }}">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-with-icon">
+              <i class="feather icon-user"></i>
+              <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="input-with-icon">
+              <i class="feather icon-mail"></i>
+              <input type="email" name="email" class="form-control" placeholder="Enter email address" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-with-icon">
+              <i class="feather icon-lock"></i>
+              <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <div class="input-with-icon">
+              <i class="feather icon-shield"></i>
+              <select name="role" class="form-select" required>
+                <option value="">Select Role</option>
+                <option value="superadmin">Super Admin</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="feather icon-plus"></i> Add User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- User Modals -->
+{% for user in users %}
+<div class="modal fade" id="userModal{{ user.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header-content">
+          <div class="user-avatar large">
+            {{ user.username[0]|upper }}
+          </div>
+          <div>
+            <h5 class="modal-title">Manage User</h5>
+            <p class="modal-subtitle">{{ user.username }}</p>
+          </div>
+        </div>
+        <button type="button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <form id="updateForm{{ user.id }}" method="POST" action="{{ url_for('users_blueprint.update_user', user_id=user.id) }}">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-with-icon">
+              <i class="feather icon-user"></i>
+              <input type="text" name="username" value="{{ user.username }}" class="form-control" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="input-with-icon">
+              <i class="feather icon-mail"></i>
+              <input type="email" name="email" value="{{ user.email }}" class="form-control" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-with-icon">
+              <i class="feather icon-lock"></i>
+              <input type="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
+            </div>
+            <small class="form-text">Leave blank if you don't want to change the password</small>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <div class="input-with-icon">
+              <i class="feather icon-shield"></i>
+              <select name="role" class="form-select">
+                <option value="superadmin" {% if user.role == "superadmin" %}selected{% endif %}>Super Admin</option>
+                <option value="admin" {% if user.role == "admin" %}selected{% endif %}>Admin</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger btn-delete" 
+                  data-user-id="{{ user.id }}" 
+                  data-user-name="{{ user.username }}">
+            <i class="feather icon-trash-2"></i> Delete User
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="feather icon-save"></i> Update User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Initialize DataTable
+  $('#usersTable').DataTable({
+    responsive: true,
+    language: {
+      search: "_INPUT_",
+      searchPlaceholder: "Search users...",
+      lengthMenu: "Show _MENU_ entries",
+      info: "Showing _START_ to _END_ of _TOTAL_ users",
+      infoEmpty: "No users found",
+      paginate: {
+        first: "First",
+        last: "Last",
+        next: "Next",
+        previous: "Previous"
+      }
+    },
+    dom: '<"table-controls"lf>rt<"table-footer"ip>',
+    pageLength: 10
+  });
+
+  // Delete user confirmation
+  document.querySelectorAll('.btn-delete').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const userId = this.getAttribute('data-user-id');
+      const userName = this.getAttribute('data-user-name');
+      const modal = bootstrap.Modal.getInstance(this.closest('.modal'));
+      
+      Swal.fire({
+        title: 'Delete User?',
+        html: `Are you sure you want to delete <strong>${userName}</strong>? This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff5370',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-secondary'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Close the modal
+          if (modal) modal.hide();
+          
+          // Submit the delete form
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `{{ url_for('users_blueprint.delete_user', user_id=0) }}`.replace('0', userId);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
+    });
+  });
+
+  // Add loading state to forms
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function() {
+      const submitBtn = this.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.innerHTML = '<i class="feather icon-loader spinner"></i> Processing...';
+        submitBtn.disabled = true;
+      }
+    });
+  });
+
+  // Add real-time validation
+  document.querySelectorAll('input[required]').forEach(input => {
+    input.addEventListener('blur', function() {
+      if (!this.value) {
+        this.classList.add('is-invalid');
+      } else {
+        this.classList.remove('is-invalid');
+      }
+    });
+  });
+});
+
+// Add spinner animation
+const style = document.createElement('style');
+style.textContent = `
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+{% endblock content %}

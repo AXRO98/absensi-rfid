@@ -1,0 +1,31 @@
+<!-- Required Js -->
+<script src="{{ url_for('static', filename='assets/js/plugins/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/plugins/simplebar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/plugins/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/fonts/custom-font.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/pcoded.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/plugins/feather.min.js') }}"></script>
+<script>
+  layout_change('light');
+  change_box_container('false');
+  layout_caption_change('true');
+  layout_rtl_change('false');
+  preset_change("preset-1");
+  layout_theme_sidebar_change('false');
+</script>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        {% for category, message in messages %}
+          Swal.fire({
+            icon: "{{ category }}",  // contoh: success, error, warning, info
+            title: "{{ message }}",
+            showConfirmButton: false,
+            timer: 2000
+          });
+        {% endfor %}
+      });
+    </script>
+  {% endif %}
+{% endwith %}

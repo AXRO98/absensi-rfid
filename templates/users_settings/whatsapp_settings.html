@@ -1,0 +1,761 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}WhatsApp Settings{% endblock title %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/custom_css/whatsapp_settings.css') }}">
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="mb-0">WhatsApp Settings</h5>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <ul class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="{{ url_for('home_blueprint.index') }}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="javascript: void(0)">Settings</a></li>
+              <li class="breadcrumb-item" aria-current="page">WhatsApp Connection</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card whatsapp-settings-card">
+      <div class="card-header">
+        <div class="header-content">
+          <h4 class="m-0">WhatsApp Connection</h4>
+          <p class="m-0 text-muted">Manage your WhatsApp bot connection</p>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <!-- Connection Status -->
+        <div class="connection-status-section">
+          <div class="status-header">
+            <div class="status-indicator" id="statusIndicator">
+              <div class="status-dot"></div>
+              <span class="status-text">Checking connection...</span>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" id="logoutBtn" style="display:none;">
+            <i class="feather icon-log-out"> Logout</i>
+            </button>
+          </div>
+          
+          <!-- Status Cards -->
+          <div class="status-card connected">
+            <div class="status-icon">
+              <i class="feather icon-check-circle"></i>
+            </div>
+            <div class="status-content">
+              <h5>WhatsApp Connected</h5>
+              <p>Your WhatsApp bot is successfully connected and ready to use.</p>
+              <!-- Tambahkan informasi koneksi -->
+              <div class="connection-info" id="connectionInfo">
+                <!-- Informasi akan diisi oleh JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <div class="status-card disconnected">
+            <div class="status-icon">
+              <i class="feather icon-alert-triangle"></i>
+            </div>
+            <div class="status-content">
+              <h5>WhatsApp Disconnected</h5>
+              <p>Scan the QR code below to connect your WhatsApp account.</p>
+            </div>
+          </div>
+
+          <div class="status-card logging-out">
+            <div class="status-icon">
+              <i class="feather icon-loader spinner"></i>
+            </div>
+            <div class="status-content">
+              <h5>Logging Out...</h5>
+              <p>Please wait while we disconnect your WhatsApp account.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="qr-section" id="qrSection">
+          <div class="qr-container">
+            <div class="qr-header">
+              <h6>Scan QR Code</h6>
+              <p>Open WhatsApp on your phone > Menu > Linked Devices > Link a Device</p>
+            </div>
+            <div class="qr-code-wrapper">
+              <div class="qr-placeholder" id="qrPlaceholder">
+                <div class="qr-loader">
+                  <div class="spinner"></div>
+                  <p>Generating QR code...</p>
+                </div>
+              </div>
+              <img id="qrImage" class="qr-image" style="display: none;" alt="WhatsApp QR Code">
+            </div>
+            <div class="qr-instructions">
+              <div class="instruction-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                  <strong>Open WhatsApp</strong>
+                  <span>On your mobile device</span>
+                </div>
+              </div>
+              <div class="instruction-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                  <strong>Go to Settings</strong>
+                  <span>Tap on three dots menu</span>
+                </div>
+              </div>
+              <div class="instruction-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                  <strong>Linked Devices</strong>
+                  <span>Select "Link a Device"</span>
+                </div>
+              </div>
+              <div class="instruction-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                  <strong>Scan QR Code</strong>
+                  <span>Point your camera at the code</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connection Info -->
+        <div class="info-section">
+          <div class="info-grid">
+            <div class="info-card">
+              <div class="info-icon">
+                <i class="feather icon-shield"></i>
+              </div>
+              <div class="info-content">
+                <h6>Secure Connection</h6>
+                <p>Your WhatsApp connection is encrypted and secure</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon">
+                <i class="feather icon-refresh-cw"></i>
+              </div>
+              <div class="info-content">
+                <h6>Auto Reconnect</h6>
+                <p>Automatic reconnection when connection drops</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon">
+                <i class="feather icon-bell"></i>
+              </div>
+              <div class="info-content">
+                <h6>Real-time Status</h6>
+                <p>Instant notifications about connection status</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header-content">
+          <i class="feather icon-log-out modal-icon text-danger"></i>
+          <div>
+            <h5 class="modal-title">Logout WhatsApp</h5>
+            <p class="modal-subtitle">Disconnect current session</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div class="modal-body">
+        <p>Are you sure you want to logout from WhatsApp? This will disconnect your current session and you'll need to scan QR code again to reconnect.</p>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmLogout">
+          <i class="feather icon-log-out"></i> Yes, Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const statusIndicator = document.getElementById('statusIndicator');
+  const qrSection = document.getElementById('qrSection');
+  const qrImage = document.getElementById('qrImage');
+  const qrPlaceholder = document.getElementById('qrPlaceholder');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const confirmLogout = document.getElementById('confirmLogout');
+  const connectionInfo = document.getElementById('connectionInfo');
+
+  // Check connection status
+  async function checkConnection() {
+    try {
+      const response = await fetch("{{ url_for('api_blueprint.whatsapp_status') }}");
+      const data = await response.json();
+      
+      updateUI(data);
+    } catch (error) {
+      console.error('Error checking status:', error);
+      updateUI({ status: 'error', error: error.message });
+    }
+  }
+
+  function updateUI(data) {
+    const statusDot = statusIndicator.querySelector('.status-dot');
+    const statusText = statusIndicator.querySelector('.status-text');
+    
+    // Reset semua status
+    document.querySelectorAll('.status-card').forEach(card => {
+      card.style.display = 'none';
+    });
+    document.getElementById('qrSection').style.display = 'none';
+    
+    switch(data.status) {
+      case 'connected':
+        logoutBtn.style.display = 'inline-flex'; // tampilkan tombol
+
+        statusDot.className = 'status-dot connected';
+        statusText.textContent = `Connected - ${data.user?.name || 'WhatsApp'}`;
+        document.querySelector('.status-card.connected').style.display = 'flex';
+
+        if (data.user) {
+            connectionInfo.innerHTML = `
+            <div class="connection-details">
+                <div class="detail-item"><strong>Name:</strong> <span>${data.user.name}</span></div>
+                <div class="detail-item"><strong>Number:</strong> <span>${data.user.number}</span></div>
+                <div class="detail-item"><strong>Platform:</strong> <span>${data.user.platform}</span></div>
+                <div class="detail-item"><strong>Connected at:</strong> <span>${new Date(data.user.connectedAt).toLocaleString()}</span></div>
+            </div>
+            `;
+        }
+        break;
+
+        
+      case 'qr':
+        logoutBtn.style.display = 'None';   
+        statusDot.className = 'status-dot disconnected';
+        statusText.textContent = 'Disconnected - Scan QR Code';
+        document.querySelector('.status-card.disconnected').style.display = 'flex';
+        document.getElementById('qrSection').style.display = 'block';
+        
+        // Update QR code
+        if (data.qr) {
+          qrImage.src = data.qr;
+          qrPlaceholder.style.display = 'none';
+          qrImage.style.display = 'block';
+        }
+        break;
+        
+      case 'logging_out':
+        logoutBtn.style.display = 'None';   
+        statusDot.className = 'status-dot disconnected';
+        statusText.textContent = 'Logging Out...';
+        document.querySelector('.status-card.logging-out').style.display = 'flex';
+        break;
+        
+      case 'loading':
+        logoutBtn.style.display = 'None';   
+        statusDot.className = 'status-dot disconnected';
+        statusText.textContent = 'Loading...';
+        document.querySelector('.status-card.disconnected').style.display = 'flex';
+        break;
+        
+      default:
+        statusDot.className = 'status-dot error';
+        statusText.textContent = 'Error - ' + (data.error || 'Unknown error');
+    }
+  }
+
+  async function logoutWhatsApp() {
+    try {
+      // Tampilkan status logging out
+      updateUI({ status: 'logging_out' });
+      
+      const response = await fetch("{{ url_for('api_blueprint.whatsapp_logout') }}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        showAlert('success', data.message || 'Logout berhasil');
+        // Refresh status setelah logout
+        setTimeout(checkConnection, 2000);
+      } else {
+        showAlert('error', data.error || 'Gagal logout');
+        // Refresh status juga untuk memastikan UI update
+        checkConnection();
+      }
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      showAlert('error', 'Terjadi kesalahan saat logout');
+      checkConnection();
+    }
+  }
+
+  function showAlert(type, message) {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: type,
+        title: type === 'success' ? 'Berhasil!' : 'Error!',
+        text: message,
+        confirmButtonColor: type === 'success' ? '#3085d6' : '#d33'
+      });
+    } else {
+      alert(message);
+    }
+  }
+
+  // Event listeners
+  logoutBtn.addEventListener('click', function() {
+    const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+    logoutModal.show();
+  });
+
+  confirmLogout.addEventListener('click', function() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
+    modal.hide();
+    logoutWhatsApp();
+  });
+
+  // Auto-refresh status setiap 5 detik
+  setInterval(checkConnection, 5000);
+  
+  // Initial check
+  checkConnection();
+});
+</script>
+
+<style>
+.whatsapp-settings-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.connection-status-section {
+  margin-bottom: 2rem;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #6c757d;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.status-dot.connected {
+  background: #28a745;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.disconnected {
+  background: #ffc107;
+}
+
+.status-dot.error {
+  background: #dc3545;
+}
+
+.status-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.status-card {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.status-card.connected {
+  display: flex;
+  background: linear-gradient(135deg, #e8f5e8, #d4edda);
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.status-card.disconnected {
+  display: flex;
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  border: 1px solid #ffeaa7;
+  color: #856404;
+}
+
+.status-card.logging-out {
+  display: flex;
+  background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+  border: 1px solid #c4c8cc;
+  color: #383d41;
+}
+
+.status-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.status-content h5 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.status-content p {
+  margin: 0.25rem 0 0 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.connection-details {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px;
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.detail-item strong {
+  min-width: 120px;
+  display: inline-block;
+}
+
+.qr-section {
+  display: none;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.5s ease;
+}
+
+.qr-container {
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 2px dashed #dee2e6;
+  transition: all 0.3s ease;
+}
+
+.qr-container:hover {
+  border-color: #007bff;
+  background: #f1f8ff;
+}
+
+.qr-header h6 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.qr-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.qr-code-wrapper {
+  margin: 2rem auto;
+  max-width: 300px;
+  position: relative;
+}
+
+.qr-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+
+.qr-image:hover {
+  transform: scale(1.02);
+}
+
+.qr-placeholder {
+  background: #fff;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  border: 2px dashed #adb5bd;
+}
+
+.qr-loader .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e9ecef;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.qr-loader p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.qr-instructions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.instruction-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.instruction-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: #007bff;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.step-content {
+  text-align: left;
+}
+
+.step-content strong {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #495057;
+}
+
+.step-content span {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.info-section {
+  margin-top: 2rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: #007bff;
+}
+
+.info-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.info-content h6 {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  color: #495057;
+}
+
+.info-content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .status-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .status-indicator {
+    justify-content: center;
+  }
+  
+  .qr-instructions {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .instruction-step {
+    padding: 0.75rem;
+  }
+  
+  .info-card {
+    padding: 1rem;
+  }
+  
+  .qr-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .instruction-step {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .step-content {
+    text-align: center;
+  }
+  
+  .connection-details .detail-item {
+    flex-direction: column;
+  }
+  
+  .connection-details .detail-item strong {
+    min-width: auto;
+    margin-bottom: 0.25rem;
+  }
+}
+</style>
+
+{% endblock content %}

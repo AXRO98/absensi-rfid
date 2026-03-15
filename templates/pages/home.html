@@ -1,0 +1,465 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Sistem Absensi RFID - SMAN 7 Manado{% endblock title %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+  <div class="pc-content">
+
+    <!-- [ Hero Section ] start -->
+    <section class="hero-section">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card hero-card shadow-lg border-0 overflow-hidden">
+            <div class="row g-0 align-items-center">
+              <!-- Bagian Gambar -->
+              <div class="col-md-6 position-relative">
+                <div class="hero-image-container">
+                  <img src="{{ url_for('static', filename='assets/images/landing/1234.jpg') }}" 
+                      class="img-fluid hero-image" 
+                      alt="SMAN 7 Manado">
+                  <div class="hero-overlay"></div>
+                </div>
+              </div>
+              <!-- Bagian Text -->
+              <div class="col-md-6 d-flex flex-column justify-content-center text-center p-5 hero-content" 
+                  style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white;">
+                <div class="school-badge mb-3">
+                  <i class="fas fa-graduation-cap fa-3x"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-3">Sistem Absensi RFID</h1>
+                <h2 class="h4 mb-4">SMAN 7 Manado</h2>
+                <p class="lead mb-4">Teknologi modern untuk memantau kehadiran siswa secara real-time dengan sistem RFID yang terintegrasi.</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                  <a href="{{ url_for('home_blueprint.dashboard') }}" class="btn btn-light btn-lg shadow hero-btn">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                  </a>
+                  <a href="#features" class="btn btn-outline-light btn-lg shadow hero-btn">
+                    <i class="fas fa-info-circle me-2"></i>Fitur
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- [ Hero Section ] end -->
+
+    <!-- [ Quick Stats ] start -->
+    <section class="quick-stats-section mt-5">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="section-title text-center mb-4">Statistik Hari Ini</h2>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="card stat-card shadow border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="stat-icon mb-3">
+                <i class="fas fa-users fa-2x text-primary"></i>
+              </div>
+              <h3 class="stat-number">1,248</h3>
+              <p class="stat-label">Total Siswa</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card stat-card shadow border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="stat-icon mb-3">
+                <i class="fas fa-user-check fa-2x text-success"></i>
+              </div>
+              <h3 class="stat-number">1,125</h3>
+              <p class="stat-label">Hadir Hari Ini</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card stat-card shadow border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="stat-icon mb-3">
+                <i class="fas fa-user-times fa-2x text-warning"></i>
+              </div>
+              <h3 class="stat-number">85</h3>
+              <p class="stat-label">Tidak Hadir</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card stat-card shadow border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="stat-icon mb-3">
+                <i class="fas fa-clock fa-2x text-info"></i>
+              </div>
+              <h3 class="stat-number">38</h3>
+              <p class="stat-label">Terlambat</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- [ Quick Stats ] end -->
+
+    <!-- [ Features Section ] start -->
+    <section id="features" class="features-section mt-5 pt-5">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="section-title text-center mb-5">Fitur Unggulan Sistem</h2>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card shadow border-0 h-100">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-bolt fa-3x text-primary"></i>
+              </div>
+              <h4 class="feature-title mb-3">Real-time Monitoring</h4>
+              <p class="feature-description">Pantau kehadiran siswa secara langsung dengan update data real-time melalui sistem RFID.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card shadow border-0 h-100">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-chart-bar fa-3x text-success"></i>
+              </div>
+              <h4 class="feature-title mb-3">Analisis Data</h4>
+              <p class="feature-description">Dapatkan laporan dan analisis statistik kehadiran untuk evaluasi pembelajaran.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card shadow border-0 h-100">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-bell fa-3x text-warning"></i>
+              </div>
+              <h4 class="feature-title mb-3">Notifikasi Otomatis</h4>
+              <p class="feature-description">Orang tua menerima notifikasi langsung ketika siswa masuk atau tidak hadir.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card shadow border-0 h-100">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-shield-alt fa-3x text-info"></i>
+              </div>
+              <h4 class="feature-title mb-3">Keamanan Terjamin</h4>
+              <p class="feature-description">Sistem dengan enkripsi data untuk melindungi informasi pribadi siswa.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card shadow border-0 h-100">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-mobile-alt fa-3x text-purple"></i>
+              </div>
+              <h4 class="feature-title mb-3">Akses Mobile</h4>
+              <p class="feature-description">Pantau kehadiran melalui perangkat mobile kapan saja dan di mana saja.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card shadow border-0 h-100">
+            <div class="card-body p-4 text-center">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-file-export fa-3x text-danger"></i>
+              </div>
+              <h4 class="feature-title mb-3">Ekspor Laporan</h4>
+              <p class="feature-description">Hasilkan dan ekspor laporan kehadiran dalam berbagai format untuk administrasi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- [ Features Section ] end -->
+
+    <!-- [ How It Works ] start -->
+    <section class="how-it-works-section mt-5 pt-5">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="section-title text-center mb-5">Cara Kerja Sistem</h2>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="step-card text-center">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <h4 class="step-title mt-3">Kartu RFID</h4>
+            <p class="step-description">Setiap siswa mendapatkan kartu RFID yang terdaftar dalam sistem.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="step-card text-center">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+              <i class="fas fa-wifi"></i>
+            </div>
+            <h4 class="step-title mt-3">Tap Kartu</h4>
+            <p class="step-description">Siswa men-tap kartu RFID di reader yang tersedia di pintu masuk.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="step-card text-center">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+              <i class="fas fa-database"></i>
+            </div>
+            <h4 class="step-title mt-3">Data Terekam</h4>
+            <p class="step-description">Sistem mencatat waktu dan identitas siswa secara otomatis.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="step-card text-center">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h4 class="step-title mt-3">Monitoring</h4>
+            <p class="step-description">Guru dan orang tua dapat memantau kehadiran melalui dashboard.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- [ How It Works ] end -->
+
+    <!-- [ CTA Section ] start -->
+    <section class="cta-section mt-5 pt-5">
+      <div class="row">
+        <div class="col-12">
+          <div class="card cta-card shadow border-0 text-center py-5" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white;">
+            <div class="card-body">
+              <h2 class="cta-title mb-3">Siap Mengoptimalkan Sistem Absensi Sekolah?</h2>
+              <p class="cta-description mb-4">Bergabunglah dengan sistem absensi modern SMAN 7 Manado untuk efisiensi dan akurasi yang lebih baik.</p>
+              <a href="{{ url_for('home_blueprint.dashboard') }}" class="btn btn-light btn-lg cta-btn">
+                <i class="fas fa-rocket me-2"></i>Mulai Sekarang
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- [ CTA Section ] end -->
+
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+<style>
+  /* Custom Styles */
+  .hero-card {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  
+  .hero-image-container {
+    position: relative;
+    height: 100%;
+    min-height: 400px;
+  }
+  
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(30, 58, 138, 0.7), transparent);
+  }
+  
+  .hero-content {
+    padding: 3rem !important;
+  }
+  
+  .school-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 auto;
+  }
+  
+  .hero-btn {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .hero-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .section-title {
+    position: relative;
+    padding-bottom: 15px;
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+  
+  .section-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #1e3a8a, #3b82f6);
+    border-radius: 2px;
+  }
+  
+  .stat-card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.1);
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1e3a8a;
+  }
+  
+  .stat-label {
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+  .feature-card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid transparent;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    border-top: 4px solid #3b82f6;
+  }
+  
+  .feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.1);
+    margin: 0 auto;
+  }
+  
+  .feature-title {
+    font-weight: 600;
+    color: #1e3a8a;
+  }
+  
+  .feature-description {
+    color: #6b7280;
+    line-height: 1.6;
+  }
+  
+  .step-card {
+    position: relative;
+    padding: 2rem 1rem;
+  }
+  
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .step-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    font-size: 1.8rem;
+  }
+  
+  .step-title {
+    font-weight: 600;
+    color: #1e3a8a;
+  }
+  
+  .step-description {
+    color: #6b7280;
+    line-height: 1.6;
+  }
+  
+  .cta-card {
+    border-radius: 20px;
+  }
+  
+  .cta-title {
+    font-weight: 700;
+  }
+  
+  .cta-btn {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .text-purple {
+    color: #8b5cf6 !important;
+  }
+</style>
+
+{% endblock content %}
